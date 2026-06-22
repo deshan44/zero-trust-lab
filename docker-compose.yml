@@ -1,0 +1,64 @@
+services:
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    env_file: .env
+    networks:
+      - dmz
+      - auth-internal
+    ports:
+      - "5001:5000"
+
+  patient-service:
+    build: ./patient-service
+    container_name: patient-service
+    env_file: .env
+    networks:
+      - patient-internal
+    ports:
+      - "5002:5000"
+
+  admin-service:
+    build: ./admin-service
+    container_name: admin-service
+    env_file: .env
+    networks:
+      - admin-internal
+    ports:
+      - "5003:5000"
+
+  api-gateway:
+    image: nginx:alpine
+    container_name: api-gateway
+    networks:
+      - dmz
+      - auth-internal
+      - patient-internal
+      - admin-internal
+    ports:
+      - "8080:80"
+    volumes:
+      - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
+
+  dashboard:
+    build: ./dashboard
+    container_name: dashboard
+    env_file: .env
+    networks:
+      - dmz
+      - auth-internal
+      - patient-internal
+      - admin-internal
+    ports:
+      - "5005:5000"
+
+networks:
+  dmz:
+    driver: bridge
+  auth-internal:
+    driver: bridge
+  patient-internal:
+    driver: bridge
+  admin-internal:
+    driver: bridge
