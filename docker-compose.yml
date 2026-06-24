@@ -53,6 +53,20 @@ services:
     ports:
       - "5005:5000"
 
+  opa:
+    image: openpolicyagent/opa:latest
+    container_name: opa
+    networks:
+      - dmz
+      - auth-internal
+      - patient-internal
+      - admin-internal
+    ports:
+      - "8181:8181"
+    volumes:
+      - ./policies:/policies
+    command: run --server --addr :8181 /policies
+
 networks:
   dmz:
     driver: bridge
